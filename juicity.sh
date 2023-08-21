@@ -206,7 +206,7 @@ EOF
     cat << EOF > /root/juicity/client.json
 {
     "listen": ":1080",
-    "server": "$realip:$port",
+    "server": "$ip:$port",
     "uuid": "$uuid",
     "password": "$passwd",
     "sni": "$domain",
