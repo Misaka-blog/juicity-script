@@ -318,7 +318,7 @@ changepasswd(){
     [[ -z $passwd ]] && passwd=$(date +%s%N | md5sum | cut -c 1-8)
 
     sed -i "4s#$oldpasswd#$passwd#g" /etc/juicity/server.json
-    sed -i "4s#$oldpasswd#$passwd#g" /root/juicity/client.json
+    sed -i "5s#$oldpasswd#$passwd#g" /root/juicity/client.json
     sed -i "s#$oldpasswd#$passwd#g" /root/juicity/url.txt
 
     stopjuicity && startjuicity
