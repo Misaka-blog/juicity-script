@@ -174,8 +174,8 @@ instjuicity(){
 
     read -p "设置 Juicity 端口 [1-65535]（回车则随机分配端口）：" port
     [[ -z $port ]] && port=$(shuf -i 2000-65535 -n 1)
-    until [[ -z $(ss -ntlp | awk '{print $4}' | sed 's/.*://g' | grep -w "$port") ]]; do
-        if [[ -n $(ss -ntlp | awk '{print $4}' | sed 's/.*://g' | grep -w "$port") ]]; then
+    until [[ -z $(ss -tunlp | grep -w udp | awk '{print $5}' | sed 's/.*://g' | grep -w "$port") ]]; do
+        if [[ -n $(ss -tunlp | grep -w udp | awk '{print $5}' | sed 's/.*://g' | grep -w "$port") ]]; then
             echo -e "${RED} $port ${PLAIN} 端口已经被其他程序占用，请更换端口重试！"
             read -p "设置 Juicity 端口 [1-65535]（回车则随机分配端口）：" port
             [[ -z $port ]] && port=$(shuf -i 2000-65535 -n 1)
@@ -270,24 +270,28 @@ juicityswitch(){
 }
 
 changeport(){
-    oldport=$(cat /etc/juicity/server.json 2>/dev/null | sed -n 2p | awk '{print $2}' | tr -d ',' | awk -F ":" '{print $4}' | tr -d '"')
+    oldport=$(cat /etc/juicity/server.json 2>/dev/null | sed -n 2p | awk '{print $2}' | tr -d ',' | awk -F ":" '{print $2}' | tr -d '"')
     
     read -p "设置 Juicity 端口[1-65535]（回车则随机分配端口）：" port
     [[ -z $port ]] && port=$(shuf -i 2000-65535 -n 1)
 
-    until [[ -z $(ss -ntlp | awk '{print $4}' | sed 's/.*://g' | grep -w "$port") ]]; do
-        if [[ -n $(ss -ntlp | awk '{print $4}' | sed 's/.*://g' | grep -w "$port") ]]; then
+    until [[ -z $(ss -tunlp | grep -w udp | awk '{print $5}' | sed 's/.*://g' | grep -w "$port") ]]; do
+        if [[ -n $(ss -tunlp | grep -w udp | awk '{print $5}' | sed 's/.*://g' | grep -w "$port") ]]; then
             echo -e "${RED} $port ${PLAIN} 端口已经被其他程序占用，请更换端口重试！"
             read -p "设置 Juicity 端口 [1-65535]（回车则随机分配端口）：" port
             [[ -z $port ]] && port=$(shuf -i 2000-65535 -n 1)
         fi
     done
 
-    sed -i "2s/$oldport/$port/g" /etc/juicity/server.json
-    sed -i "4s/$oldport/$port/g" /root/juicity/client.json
-    sed -i "4s/$oldport/$port/g" /root/juicity/url.txt
+    sed -i "2s#$oldport#$port#g" /etc/juicity/server.json
+    sed -i "3s#$oldport#$port#g" /root/juicity/client.json
+    sed -i "s#$oldport#$port#g" /root/juicity/url.txt
 
     stopjuicity && startjuicity
+
+    green "Jucicity 端口已成功修改为：$port"
+    yellow "请手动更新客户端配置文件以使用节点"
+    showconf
 }
 
 changeuuid(){
@@ -296,11 +300,15 @@ changeuuid(){
     read -p "设置 Juicity UUID（回车跳过为随机 UUID）：" uuid
     [[ -z $uuid ]] && uuid=$(cat /proc/sys/kernel/random/uuid)
 
-    sed -i "3s/$olduuid/$uuid/g" /etc/juicity/server.json
-    sed -i "5s/$olduuid/$uuid/g" /root/juicity/client.json
-    sed -i "5s/$olduuid/$uuid/g" /root/juicity/url.txt
+    sed -i "4s#$olduuid#$uuid#g" /etc/juicity/server.json
+    sed -i "4s#$olduuid#$uuid#g" /root/juicity/client.json
+    sed -i "s#$olduuid#$uuid#g" /root/juicity/url.txt
 
     stopjuicity && startjuicity
+
+    green "Jucicity 节点 UUID 已成功修改为：$uuid"
+    yellow "请手动更新客户端配置文件以使用节点"
+    showconf
 }
 
 changepasswd(){
@@ -309,11 +317,15 @@ changepasswd(){
     read -p "设置 Juicity 密码（回车跳过为随机字符）：" passwd
     [[ -z $passwd ]] && passwd=$(date +%s%N | md5sum | cut -c 1-8)
 
-    sed -i "3s/$oldpasswd/$passwd/g" /etc/juicity/server.json
-    sed -i "5s/$oldpasswd/$passwd/g" /root/juicity/client.json
-    sed -i "5s/$oldpasswd/$passwd/g" /root/juicity/url.txt
+    sed -i "4s#$oldpasswd#$passwd#g" /etc/juicity/server.json
+    sed -i "4s#$oldpasswd#$passwd#g" /root/juicity/client.json
+    sed -i "s#$oldpasswd#$passwd#g" /root/juicity/url.txt
 
     stopjuicity && startjuicity
+
+    green "Jucicity 节点密码已成功修改为：$passwd"
+    yellow "请手动更新客户端配置文件以使用节点"
+    showconf
 }
 
 changeconf(){
