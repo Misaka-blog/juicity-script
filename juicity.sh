@@ -205,7 +205,7 @@ EOF
     mkdir /root/juicity
     cat << EOF > /root/juicity/client.json
 {
-    "listen": ":1080",
+    "listen": ":7080",
     "server": "$ip:$port",
     "uuid": "$uuid",
     "password": "$passwd",
