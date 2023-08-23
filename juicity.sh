@@ -81,7 +81,7 @@ instjuicity(){
     last_version=$(curl -Ls "https://api.github.com/repos/juicity/juicity/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
     tmp_dir=$(mktemp -d)
 
-    wget https://github.com/juicity/juicity/releases/download/$last_version/juicity-linux-x86_64.zip -O $tmp_dir/juicity.zip
+    wget https://github.com/juicity/juicity/releases/download/$last_version/juicity-linux-$(archAffix).zip -O $tmp_dir/juicity.zip
 
     cd $tmp_dir
     unzip juicity.zip
