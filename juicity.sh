@@ -181,6 +181,7 @@ instjuicity(){
             [[ -z $port ]] && port=$(shuf -i 2000-65535 -n 1)
         fi
     done
+    yellow "使用在 Juicity 节点的端口为：$port"
 
     read -p "设置 Juicity UUID（回车跳过为随机 UUID）：" uuid
     [[ -z $uuid ]] && uuid=$(cat /proc/sys/kernel/random/uuid)
@@ -217,6 +218,7 @@ EOF
     "log_level": "info"
 }
 EOF
+    
     shared_link=$(juicity-server generate-sharelink -c /etc/juicity/server.json)
     echo "$shared_link" > /root/juicity/url.txt
 
