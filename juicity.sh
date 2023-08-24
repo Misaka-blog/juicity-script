@@ -184,9 +184,11 @@ instjuicity(){
 
     read -p "设置 Juicity UUID（回车跳过为随机 UUID）：" uuid
     [[ -z $uuid ]] && uuid=$(cat /proc/sys/kernel/random/uuid)
+    yellow "使用在 Juicity 节点的用户名为：$uuid"
 
     read -p "设置 Juicity 密码（回车跳过为随机字符）：" passwd
     [[ -z $passwd ]] && passwd=$(date +%s%N | md5sum | cut -c 1-8)
+    yellow "使用在 Juicity 节点的密码为：$passwd"
 
     mkdir /etc/juicity
     cat << EOF > /etc/juicity/server.json
