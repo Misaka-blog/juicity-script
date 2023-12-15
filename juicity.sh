@@ -133,6 +133,10 @@ instjuicity(){
             [[ -z $domain ]] && red "未输入域名，无法执行操作！" && exit 1
             green "已输入的域名：$domain" && sleep 1
             domainIP=$(curl -sm8 ipget.net/?ip="${domain}")
+            if [[ -z $domainIP || -n $(echo $domainIP | grep "nginx") ]]; then
+                domainIP=$(echo "$(nslookup $domain 2>&1)" | awk '{print $NF}')
+            fi
+            
             if [[ $domainIP == $ip ]]; then
                 ${PACKAGE_INSTALL[int]} curl wget sudo socat openssl
                 if [[ $SYSTEM == "CentOS" ]]; then
