@@ -132,9 +132,22 @@ instjuicity(){
             read -p "请输入需要申请证书的域名：" domain
             [[ -z $domain ]] && red "未输入域名，无法执行操作！" && exit 1
             green "已输入的域名：$domain" && sleep 1
-            domainIP=$(curl -sm8 ipget.net/?ip="${domain}")
-            if [[ -z $domainIP || -n $(echo $domainIP | grep "nginx") ]]; then
-                domainIP=$(echo "$(nslookup $domain 2>&1)" | awk '{print $NF}')
+            domainIP=$(dig @8.8.8.8 +time=2 +short "$domain" 2>/dev/null)
+            if echo $domainIP | grep -q "network unreachable\|timed out" || [[ -z $domainIP ]]; then
+                domainIP=$(dig @2001:4860:4860::8888 +time=2 aaaa +short "$domain" 2>/dev/null)
+            fi
+            if echo $domainIP | grep -q "network unreachable\|timed out" || [[ -z $domainIP ]] ; then
+                red "未解析出 IP，请检查域名是否输入有误" 
+                yellow "是否尝试强行匹配？"
+                green "1. 是，将使用强行匹配"
+                green "2. 否，退出脚本"
+                read -p "请输入选项 [1-2]：" ipChoice
+                if [[ $ipChoice == 1 ]]; then
+                    yellow "将尝试强行匹配以申请域名证书"
+                else
+                    red "将退出脚本"
+                    exit 1
+                fi
             fi
             
             if [[ $domainIP == $ip ]]; then
