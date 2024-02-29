@@ -75,8 +75,9 @@ instjuicity(){
 
     if [[ ! ${SYSTEM} == "CentOS" ]]; then
         ${PACKAGE_UPDATE}
+        ${PACKAGE_INSTALL} bind-utils
     fi
-    ${PACKAGE_INSTALL} wget curl sudo unzip
+    ${PACKAGE_INSTALL} wget curl sudo unzip dnsutils
     
     last_version=$(curl -Ls "https://api.github.com/repos/juicity/juicity/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/') || last_version=v$(curl -Ls "https://data.jsdelivr.com/v1/package/resolve/gh/juicity/juicity" | grep '"version":' | sed -E 's/.*"([^"]+)".*/\1/')
     tmp_dir=$(mktemp -d)
