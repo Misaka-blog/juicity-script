@@ -133,9 +133,9 @@ instjuicity(){
             read -p "请输入需要申请证书的域名：" domain
             [[ -z $domain ]] && red "未输入域名，无法执行操作！" && exit 1
             green "已输入的域名：$domain" && sleep 1
-            domainIP=$(dig @8.8.8.8 +time=2 +short "$domain" 2>/dev/null)
+            domainIP=$(dig @8.8.8.8 +time=2 +short "$domain" 2>/dev/null | sed -n 1p)
             if echo $domainIP | grep -q "network unreachable\|timed out" || [[ -z $domainIP ]]; then
-                domainIP=$(dig @2001:4860:4860::8888 +time=2 aaaa +short "$domain" 2>/dev/null)
+                domainIP=$(dig @2001:4860:4860::8888 +time=2 aaaa +short "$domain" 2>/dev/null | sed -n 1p)
             fi
             if echo $domainIP | grep -q "network unreachable\|timed out" || [[ -z $domainIP ]] ; then
                 red "未解析出 IP，请检查域名是否输入有误" 
