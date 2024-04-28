@@ -246,7 +246,7 @@ EOF
     if [[ -n $(systemctl status juicity-server 2>/dev/null | grep -w active) && -f '/etc/juicity/server.json' ]]; then
         green "Juicity service started successfully"
     else
-                red "Juicity service failed to start. Please run 'systemctl status juicity-server' to check the service status and provide feedback. Exiting the script." && exit 1
+        red "Juicity service failed to start. Please run 'systemctl status juicity-server' to check the service status and provide feedback. Exiting the script." && exit 1
     fi
     red "======================================================================================"
     green "Juicity proxy service installation completed"
